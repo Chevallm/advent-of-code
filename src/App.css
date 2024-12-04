@@ -1,0 +1,13 @@
+#root {
+  max-width: 1280px;
+  padding: 2rem;
+  width: 100%;
+}
+
+.layout {
+  display: flex;
+}
+
+.layout main {
+  flex: 1;
+}
