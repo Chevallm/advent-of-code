@@ -1,4 +1,4 @@
 export default function solve(input: string) {
 
-    console.log('coucou');
+    console.log(input);
 }

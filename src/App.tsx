@@ -6,11 +6,13 @@ function App() {
 
     const [challenge, setChallenge] = useState<{ year: number, day: number }>({year: 2024, day: 1})
     const [input, setInput] = useState<string>('');
-    const [solveFn, setSolveFn] = useState<{default: (input: string) => string}>({default: (_) => ''});
+    const [solveFn, setSolveFn] = useState<{default: (input: string) => string}>({default: () => ''});
     const [code, setCode] = useState<string>('');
+    const [part, setPart] = useState<1 | 2>(1);
+    const [output, setOutput] = useState<string>('');
 
     useEffect(() => {
-        fetch(`./${challenge.year}/${challenge.day}/input`).then(res => res.text()).then(input => {
+        fetch(`/${challenge.year}/${challenge.day}/input`).then(res => res.text()).then(input => {
             setInput(input);
         }).catch(() => {
             console.error('Unable to retrieve input')
@@ -18,19 +20,19 @@ function App() {
     }, [challenge]);
 
     useEffect(() => {
-        import(`./${challenge.year}/${challenge.day}/solution.ts`).then(solution => {
+        import(`./${challenge.year}/${challenge.day}/solution${part}.ts`).then(solution => {
             setSolveFn(solution);
-            fetch(`./${challenge.year}/${challenge.day}/solution.ts`).then(res => res.text()).then(_code => {
+            fetch(`${challenge.year}/${challenge.day}/solution${part}.ts`).then(res => res.text()).then(_code => {
                 setCode(_code);
             })
-        }).catch(() => {
-            console.error('Unable to retrieve solution')
+        }).catch((e) => {
+            console.error('Unable to retrieve solution', e)
         })
-    }, [challenge.day, challenge.year, input]);
+    }, [challenge.day, challenge.year, input, part]);
 
     useEffect(() => {
-        console.log(solveFn?.default(input))
-    }, [solveFn]);
+        setOutput(solveFn?.default(input))
+    }, [input, solveFn]);
 
     const challenges = [
         {year: 2024, days: [1, 2]}
@@ -54,8 +56,14 @@ function App() {
                 </nav>
                 <main>
                     <h1>{challenge.year} → {challenge.day}</h1>
+                    <section>
+                        <span onClick={() => setPart(1)}>Part one</span>
+                        <span onClick={() => setPart(2)}>Part two</span>
+                    </section>
 
                     <CodeBlock language="typescript" text={code} theme={dracula}></CodeBlock>
+
+                    <p>Output: {output}</p>
                 </main>
             </div>
         </>
