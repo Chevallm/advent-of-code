@@ -14,6 +14,7 @@ function transformInput(input: string): number[][] {
 
 function isReportValid(report: number[]): boolean {
     let direction: 'ASC' | 'DESC' | undefined = undefined;
+    let errors = 0;
 
     return report.every((current: number, index: number) => {
         const isLast = index === report.length - 1;
@@ -42,6 +43,12 @@ function isReportValid(report: number[]): boolean {
         const distance = Math.abs(difference);
         const isInRange = distance >= MIN_STEP && distance <= MAX_STEP;
 
-        return isInRange && isInSameDirection;
+        const reportIsValid = isInRange && isInSameDirection;
+        if (!reportIsValid && errors < 1) {
+            errors++;
+            return true;
+        } else {
+            return reportIsValid;
+        }
     });
 }
